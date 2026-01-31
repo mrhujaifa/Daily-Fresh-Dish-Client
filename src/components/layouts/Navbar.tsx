@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -12,49 +12,69 @@ import {
   Search,
   UtensilsCrossed,
   Store,
-  TicketPercent,
-  Navigation,
   MapPin,
+  User as UserIcon,
+  LogOut,
+  Settings,
+  ClipboardList,
 } from "lucide-react";
 import logo from "../../../public/logos/logo5.png";
 import { usePathname } from "next/navigation";
+import { getSessionAction } from "@/actions/user.actions";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const pathname = usePathname();
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
-  const toggleMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
+  const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const isActive = (path: string) => pathname === path;
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const { data, error } = await getSessionAction();
+        if (data) setSession(data);
+      } catch (err) {
+        console.error("Failed to fetch session:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSession();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="bg-white shadow-md fixed w-full z-50 top-0 left-0 border-b border-gray-100">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* =======================
-              MAIN NAVBAR SECTION 
-           ======================= */}
         <div className="flex justify-between items-center py-2 gap-4">
-          {/* LEFT SIDE: LOGO & NAME */}
           <div className="flex-shrink-0 flex items-center gap-3 cursor-pointer">
             <div className="relative w-10 h-10">
-              <Image
-                src={logo}
-                alt="Brand Logo"
-                width={40}
-                height={40}
-                className=""
-              />
+              <Image src={logo} alt="Brand Logo" width={40} height={40} />
             </div>
-            <span className=" text-xl text-yellow-400 tracking-tight ">
+            <span className="text-xl text-yellow-400 tracking-tight">
               foodprime
             </span>
           </div>
 
-          {/* CENTER: SEARCH BAR */}
           <div className="hidden md:flex flex-1 max-w-md mx-auto">
             <div className="relative w-full">
               <input
@@ -69,15 +89,62 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* RIGHT SIDE: ACTIONS */}
           <div className="hidden md:flex items-center space-x-6">
-            <button className="text-gray-700 border text-sm rounded-sm border-black px-4 py-1 ">
-              Log in
-            </button>
+            {!loading && !session?.user ? (
+              <>
+                <button className="text-gray-700 border text-sm rounded-sm border-black px-4 py-1">
+                  Log in
+                </button>
+                <button className="bg-yellow-300 hover:bg-yellow-400 px-5 text-sm py-1.5 rounded-sm">
+                  Sign up for Free Delivery
+                </button>
+              </>
+            ) : (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-2 hover:bg-gray-50 p-1 rounded-md transition-all"
+                >
+                  <div className="bg-yellow-400 p-1.5 rounded-full text-white">
+                    <UserIcon size={18} />
+                  </div>
+                  <span className="text-sm font-bold text-gray-800">
+                    {session?.user?.name}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform ${isUserMenuOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
 
-            <button className="bg-yellow-300 hover:bg-yellow-400 px-5 text-sm py-1.5 rounded-sm">
-              Sign up for Free Delivery
-            </button>
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-md shadow-xl py-2 z-50 transition-all">
+                    <Link
+                      href="/profile"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <UserIcon size={16} /> My Profile
+                    </Link>
+                    <Link
+                      href="/orders"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <ClipboardList size={16} /> My Orders
+                    </Link>
+                    <Link
+                      href="/settings"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <Settings size={16} /> Settings
+                    </Link>
+                    <hr className="my-1 border-gray-100" />
+                    <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                      <LogOut size={16} /> Log out
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="relative">
               <button
@@ -88,7 +155,6 @@ const Navbar = () => {
                 <span className="text-sm">EN</span>
                 <ChevronDown size={14} />
               </button>
-
               {isLangOpen && (
                 <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-md shadow-lg py-1">
                   <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -109,7 +175,6 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* MOBILE MENU BUTTON */}
           <div className="md:hidden flex items-center">
             <button
               onClick={toggleMenu}
@@ -120,12 +185,8 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* =======================
-              SEC NAVBAR SECTION (Added)
-           ======================= */}
         <div className="hidden md:flex items-center pt-6 pb-3 border-t border-gray-50 justify-between">
           <div className="flex items-center gap-16">
-            {/* 1. Prime Meal (Active Route Support) */}
             <Link
               href="/"
               className="flex items-center gap-2 cursor-pointer group relative"
@@ -139,11 +200,7 @@ const Navbar = () => {
                 }
               />
               <span
-                className={`text-sm font-bold transition-colors ${
-                  isActive("/prime-meal")
-                    ? "text-yellow-500"
-                    : "text-gray-700 group-hover:text-yellow-500"
-                }`}
+                className={`text-sm font-bold transition-colors ${isActive("/prime-meal") ? "text-yellow-500" : "text-gray-700 group-hover:text-yellow-500"}`}
               >
                 Prime Meal
               </span>
@@ -152,7 +209,6 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* 2. Prime Shop (With a 'New' Badge) */}
             <Link
               href="/prime-shop"
               className="flex items-center gap-2 cursor-pointer group relative"
@@ -166,15 +222,11 @@ const Navbar = () => {
                 }
               />
               <span
-                className={`text-sm font-bold transition-colors ${
-                  isActive("/prime-shop")
-                    ? "text-yellow-500"
-                    : "text-gray-700 group-hover:text-yellow-500"
-                }`}
+                className={`text-sm font-bold transition-colors ${isActive("/prime-shop") ? "text-yellow-500" : "text-gray-700 group-hover:text-yellow-500"}`}
               >
                 Prime Shop
               </span>
-              <span className="absolute -top-3 -right-6 bg-yellow-300 text-[10px] px-1.5 py-0.5 rounded-full  animate-pulse">
+              <span className="absolute -top-3 -right-6 bg-yellow-300 text-[10px] px-1.5 py-0.5 rounded-full animate-pulse">
                 New
               </span>
               {isActive("/prime-shop") && (
@@ -182,7 +234,6 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* 4. Order Tracking  */}
             <Link
               href="/track-order"
               className="flex items-center gap-2 cursor-pointer group"
@@ -201,14 +252,12 @@ const Navbar = () => {
                   d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"
                 />
               </svg>
-
               <span className="text-sm font-bold text-gray-700 group-hover:text-green-600 transition-colors">
                 Track Order
               </span>
             </Link>
           </div>
 
-          {/* 5. RIGHT SIDE: Delivery Location (Context Awareness) */}
           <div className="flex items-center gap-2 text-gray-500 hover:text-gray-800 cursor-pointer transition-all">
             <MapPin size={16} className="text-yellow-500" />
             <span className="text-xs font-medium">
@@ -219,7 +268,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* MOBILE MENU */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-gray-100 absolute w-full left-0 bg-white">
           <div className="px-4 pt-4 pb-6 space-y-4 flex flex-col">
@@ -234,8 +282,6 @@ const Navbar = () => {
                 size={18}
               />
             </div>
-
-            {/* SecNavbar items in Mobile */}
             <div className="flex gap-4 py-2 border-b border-gray-50">
               <span className="text-sm font-bold flex items-center gap-2">
                 <UtensilsCrossed size={16} /> Prime Meal
@@ -244,7 +290,6 @@ const Navbar = () => {
                 <Store size={16} /> Prime Shop
               </span>
             </div>
-
             <Link
               href="/"
               className="block text-gray-700 hover:text-yellow-500 font-medium py-2"
@@ -257,25 +302,27 @@ const Navbar = () => {
             >
               Shop
             </Link>
-
             <hr className="border-gray-100" />
-
-            <div className="flex items-center justify-between py-2">
-              <span className="text-gray-600 flex items-center gap-2">
-                <Globe size={18} /> Language: EN
-              </span>
-              <span className="text-gray-600 flex items-center gap-2">
-                <ShoppingCart size={18} /> Cart (3)
-              </span>
-            </div>
-
-            <button className="w-full text-center border border-gray-300 py-2 rounded-lg font-semibold text-gray-700 hover:bg-gray-50">
-              Log in
-            </button>
-
-            <button className="w-full text-center bg-yellow-300 hover:bg-yellow-400 text-gray-900 py-3 rounded-lg font-bold shadow-sm">
-              Sign up for Free Delivery
-            </button>
+            {!session?.user ? (
+              <>
+                <button className="w-full text-center border border-gray-300 py-2 rounded-lg font-semibold text-gray-700">
+                  Log in
+                </button>
+                <button className="w-full text-center bg-yellow-300 text-gray-900 py-3 rounded-lg font-bold">
+                  Sign up for Free Delivery
+                </button>
+              </>
+            ) : (
+              <div className="py-2">
+                <p className="text-sm font-bold text-gray-800 mb-2">
+                  Logged in as: {session.user.name}
+                </p>
+                <Link href="/profile" className="block py-2 text-gray-600">
+                  My Profile
+                </Link>
+                <button className="text-red-600 font-bold mt-2">Log out</button>
+              </div>
+            )}
           </div>
         </div>
       )}

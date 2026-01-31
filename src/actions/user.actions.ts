@@ -6,7 +6,10 @@ import { redirect } from "next/navigation";
 
 export const getSessionAction = async () => {
   const session = await userService.getSession();
-  return session;
+
+  const data = session.data;
+  const error = session.error;
+  return { data, error };
 };
 
 export async function handleSignOutServer() {

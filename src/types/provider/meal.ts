@@ -83,9 +83,9 @@ export interface MealsProvider {
 }
 
 // Service Response er jonno common type
-export interface ServiceResponse<T> {
-  success: boolean;
-  data?: T;
-  message: string;
-  errors?: any;
-}
+// export interface ServiceResponse<T> {
+//   success: boolean;
+//   data?: T;
+//   message: string;
+//   errors?: any;
+// }
