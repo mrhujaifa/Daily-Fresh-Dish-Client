@@ -19,7 +19,6 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { userSignInSchema } from "@/lib/validation";
-import { signInInput } from "@/types";
 import { useState } from "react";
 import { authServices } from "@/services/auth.services";
 import { toast } from "sonner";

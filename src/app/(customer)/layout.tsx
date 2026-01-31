@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/layouts/Navbar";
+import Navbar from "@/components/layouts/Navbar";
 
 export default function CommonLayout({
   children,
@@ -7,7 +7,9 @@ export default function CommonLayout({
 }) {
   return (
     <div>
-      <Navbar />
+      <header>
+        <Navbar />
+      </header>
       {children}
     </div>
   );

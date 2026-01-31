@@ -12,4 +12,19 @@ export const adminRoutes: Route[] = [
       },
     ],
   },
+  {
+    title: "Provider Management",
+    items: [
+      {
+        icon: RouteIcon,
+        title: "Partner Ship Request",
+        url: "/dashboard/admin/partner-ship",
+      },
+      // {
+      //   icon: RouteIcon,
+      //   title: "Provider add meals",
+      //   url: "/dashboard/provider/meals/create",
+      // },
+    ],
+  },
 ];

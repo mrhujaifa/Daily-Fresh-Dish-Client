@@ -29,6 +29,8 @@ export default async function DashboardRootLayout({
 
   const role = userInfo?.role;
 
+  console.log(userInfo.role);
+
   return (
     <div className="bg-black">
       <SidebarProvider>
@@ -54,9 +56,12 @@ export default async function DashboardRootLayout({
             </Breadcrumb>
           </header>
 
-          <div className="">
-            {/* Parallel Routes Logic */}
-            {role === Roles.admin ? admin : provider}
+          <div className="p-4 md:p-6">
+            {/* Admin slot: শুধুমাত্র অ্যাডমিন দেখতে পাবে */}
+            {role === Roles.admin && admin}
+
+            {/* Provider slot: অ্যাডমিনও দেখতে পাবে আবার প্রোভাইডার নিজেও দেখতে পাবে */}
+            {(role === Roles.admin || role === Roles.provider) && provider}
           </div>
         </SidebarInset>
       </SidebarProvider>

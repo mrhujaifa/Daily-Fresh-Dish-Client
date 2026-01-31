@@ -1,351 +1,286 @@
-import * as React from "react";
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
-import {
-  Book,
-  Menu,
-  Sunset,
-  Trees,
-  Zap,
-  User,
-  Settings,
-  LogOut,
-  Handshake,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { userService } from "@/services/user.services";
 import Link from "next/link";
+import {
+  ShoppingCart,
+  Globe,
+  Menu,
+  X,
+  ChevronDown,
+  Search,
+  UtensilsCrossed,
+  Store,
+  TicketPercent,
+  Navigation,
+  MapPin,
+} from "lucide-react";
+import logo from "../../../public/logos/logo5.png";
+import { usePathname } from "next/navigation";
 
-// --- Types ---
-interface SessionUser {
-  id: string;
-  email: string;
-  name?: string | null;
-  image?: string | null;
-}
+const Navbar = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false);
 
-interface MenuItem {
-  title: string;
-  url: string;
-  description?: string;
-  icon?: React.ReactNode;
-  items?: MenuItem[];
-}
+  const pathname = usePathname();
 
-interface NavbarProps {
-  className?: string;
-  logo?: {
-    url: string;
-    src: string;
-    alt: string;
-    title: string;
+  const toggleMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
-  menu?: MenuItem[];
-  auth?: {
-    login: { title: string; url: string };
-    signup: { title: string; url: string };
-  };
-}
 
-const Navbar = async ({
-  logo = {
-    url: "/",
-    src: "/logos/logo2.png",
-    alt: "logo",
-    title: "",
-  },
-  menu = [
-    { title: "Home", url: "/" },
-    {
-      title: "Shop",
-      url: "#",
-      items: [
-        {
-          title: "Blog",
-          description: "Latest industry news",
-          icon: <Book className="size-5" />,
-          url: "#",
-        },
-        {
-          title: "Company",
-          description: "Our mission",
-          icon: <Trees className="size-5" />,
-          url: "#",
-        },
-      ],
-    },
-    { title: "Pricing", url: "#" },
-    { title: "Meals", url: "/meals" },
-  ],
-  auth = {
-    login: { title: "Login", url: "/login" },
-    signup: { title: "Sign up", url: "/signup" },
-  },
-  className,
-}: NavbarProps) => {
-  const sessionResponse = await userService.getSession();
-  const user = sessionResponse?.data?.user as SessionUser | undefined;
+  const isActive = (path: string) => pathname === path;
 
   return (
-    <section
-      className={cn(
-        "top-0 z-50 w-full bg-black fixed  py-4 text-white border-b border-white/10",
-        className,
-      )}
-    >
-      <div className="container mx-auto px-4 md:px-6">
-        <nav className="hidden items-center lg:grid lg:grid-cols-3 w-full">
-          <div className="flex justify-start">
-            <div
-              className="flex items-center gap-2 text-lg text-[#5bab7a] font-bold
-            "
-            >
-              <a href={logo.url} className="flex items-center gap-2">
-                <Image
-                  width={34}
-                  height={34}
-                  src={logo.src}
-                  className=""
-                  alt={logo.alt}
-                />
-              </a>
-              <span className="">foodprime</span>
+    <nav className="bg-white shadow-md fixed w-full z-50 top-0 left-0 border-b border-gray-100">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* =======================
+              MAIN NAVBAR SECTION 
+           ======================= */}
+        <div className="flex justify-between items-center py-2 gap-4">
+          {/* LEFT SIDE: LOGO & NAME */}
+          <div className="flex-shrink-0 flex items-center gap-3 cursor-pointer">
+            <div className="relative w-10 h-10">
+              <Image
+                src={logo}
+                alt="Brand Logo"
+                width={40}
+                height={40}
+                className=""
+              />
+            </div>
+            <span className=" text-xl text-yellow-400 tracking-tight ">
+              foodprime
+            </span>
+          </div>
+
+          {/* CENTER: SEARCH BAR */}
+          <div className="hidden md:flex flex-1 max-w-md mx-auto">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search food..."
+                className="w-full border border-gray-300 bg-gray-50 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
+              />
+              <Search
+                className="absolute left-3 top-2.5 text-gray-400"
+                size={18}
+              />
             </div>
           </div>
 
-          <div className="flex justify-center">
-            <NavigationMenu>
-              <NavigationMenuList className="gap-1">
-                {menu.map((item) => (
-                  <MenuItemComponent key={item.title} item={item} />
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
+          {/* RIGHT SIDE: ACTIONS */}
+          <div className="hidden md:flex items-center space-x-6">
+            <button className="text-gray-700 border text-sm rounded-sm border-black px-4 py-1 ">
+              Log in
+            </button>
 
-          <div className="flex justify-end gap-3 items-center">
-            {user ? (
-              <ProfileDropdown user={user} />
-            ) : (
-              <>
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="sm"
-                  className="text-white hover:bg-white/10"
-                >
-                  <a href={auth.login.url}>{auth.login.title}</a>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className="bg-white text-black hover:bg-gray-200 border-none"
-                >
-                  <a href={auth.signup.url}>{auth.signup.title}</a>
-                </Button>
-              </>
-            )}
-          </div>
-        </nav>
+            <button className="bg-yellow-300 hover:bg-yellow-400 px-5 text-sm py-1.5 rounded-sm">
+              Sign up for Free Delivery
+            </button>
 
-        <div className="flex items-center justify-between lg:hidden">
-          <a href={logo.url}>
-            <img
-              src={logo.src}
-              className="max-h-8 brightness-0 invert"
-              alt={logo.alt}
-            />
-          </a>
-          <div className="flex items-center gap-4">
-            {user && <ProfileDropdown user={user} />}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-white">
-                  <Menu className="size-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="bg-black text-white border-white/10"
+            <div className="relative">
+              <button
+                onClick={() => setIsLangOpen(!isLangOpen)}
+                className="flex items-center gap-1 text-gray-600 hover:text-black"
               >
-                <SheetHeader className="text-left">
-                  <SheetTitle className="text-white">Navigation</SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-8 mt-8">
-                  <Accordion type="single" collapsible className="w-full">
-                    {menu.map((item) => (
-                      <MobileMenuItem key={item.title} item={item} />
-                    ))}
-                  </Accordion>
-                  {!user && (
-                    <div className="flex flex-col gap-3">
-                      <Button
-                        asChild
-                        variant="outline"
-                        className="border-white/20 text-white hover:bg-white/10"
-                      >
-                        <a href={auth.login.url}>{auth.login.title}</a>
-                      </Button>
-                      <Button asChild className="bg-white text-black">
-                        <a href={auth.signup.url}>{auth.signup.title}</a>
-                      </Button>
-                    </div>
-                  )}
+                <Globe size={20} />
+                <span className="text-sm">EN</span>
+                <ChevronDown size={14} />
+              </button>
+
+              {isLangOpen && (
+                <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-md shadow-lg py-1">
+                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    English
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Bangla
+                  </button>
                 </div>
-              </SheetContent>
-            </Sheet>
+              )}
+            </div>
+
+            <div className="relative cursor-pointer text-gray-600 hover:text-black transition">
+              <ShoppingCart size={24} />
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                3
+              </span>
+            </div>
+          </div>
+
+          {/* MOBILE MENU BUTTON */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={toggleMenu}
+              className="text-gray-700 hover:text-black focus:outline-none"
+            >
+              {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
+        </div>
+
+        {/* =======================
+              SEC NAVBAR SECTION (Added)
+           ======================= */}
+        <div className="hidden md:flex items-center pt-6 pb-3 border-t border-gray-50 justify-between">
+          <div className="flex items-center gap-16">
+            {/* 1. Prime Meal (Active Route Support) */}
+            <Link
+              href="/"
+              className="flex items-center gap-2 cursor-pointer group relative"
+            >
+              <UtensilsCrossed
+                size={18}
+                className={
+                  isActive("/prime-meal")
+                    ? "text-yellow-500"
+                    : "text-gray-500 group-hover:text-yellow-500"
+                }
+              />
+              <span
+                className={`text-sm font-bold transition-colors ${
+                  isActive("/prime-meal")
+                    ? "text-yellow-500"
+                    : "text-gray-700 group-hover:text-yellow-500"
+                }`}
+              >
+                Prime Meal
+              </span>
+              {isActive("/") && (
+                <div className="absolute -bottom-[9px] left-0 w-full h-0.5 bg-yellow-500" />
+              )}
+            </Link>
+
+            {/* 2. Prime Shop (With a 'New' Badge) */}
+            <Link
+              href="/prime-shop"
+              className="flex items-center gap-2 cursor-pointer group relative"
+            >
+              <Store
+                size={18}
+                className={
+                  isActive("/prime-shop")
+                    ? "text-yellow-500"
+                    : "text-gray-500 group-hover:text-yellow-500"
+                }
+              />
+              <span
+                className={`text-sm font-bold transition-colors ${
+                  isActive("/prime-shop")
+                    ? "text-yellow-500"
+                    : "text-gray-700 group-hover:text-yellow-500"
+                }`}
+              >
+                Prime Shop
+              </span>
+              <span className="absolute -top-3 -right-6 bg-yellow-300 text-[10px] px-1.5 py-0.5 rounded-full  animate-pulse">
+                New
+              </span>
+              {isActive("/prime-shop") && (
+                <div className="absolute -bottom-[9px] left-0 w-full h-0.5 bg-yellow-500" />
+              )}
+            </Link>
+
+            {/* 4. Order Tracking  */}
+            <Link
+              href="/track-order"
+              className="flex items-center gap-2 cursor-pointer group"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"
+                />
+              </svg>
+
+              <span className="text-sm font-bold text-gray-700 group-hover:text-green-600 transition-colors">
+                Track Order
+              </span>
+            </Link>
+          </div>
+
+          {/* 5. RIGHT SIDE: Delivery Location (Context Awareness) */}
+          <div className="flex items-center gap-2 text-gray-500 hover:text-gray-800 cursor-pointer transition-all">
+            <MapPin size={16} className="text-yellow-500" />
+            <span className="text-xs font-medium">
+              Deliver to: <b className="text-gray-800">Your Current Location</b>
+            </span>
+            <ChevronDown size={14} />
           </div>
         </div>
       </div>
-    </section>
-  );
-};
 
-const ProfileDropdown = ({ user }: { user: SessionUser }) => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="relative h-9 w-9 rounded-full p-0 border border-white/20 focus-visible:ring-0 focus-visible:ring-offset-0"
-        >
-          <Avatar className="h-9 w-9">
-            <AvatarImage src={user.image || ""} alt={user.name || "User"} />
-            <AvatarFallback className="bg-zinc-800 text-white">
-              {user.name
-                ? user.name.charAt(0).toUpperCase()
-                : user.email.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="w-80 p-3 mt-2 bg-zinc-950 border rounded-sm border-white/10 text-white shadow-2xl"
-        align="end"
-      >
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-3">
-            <p className="text-sm font-medium leading-none">
-              {user.name || "User"}
-            </p>
-            <p className="text-xs leading-none text-zinc-400">{user.email}</p>
+      {/* MOBILE MENU */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-100 absolute w-full left-0 bg-white">
+          <div className="px-4 pt-4 pb-6 space-y-4 flex flex-col">
+            <div className="relative w-full mb-2">
+              <input
+                type="text"
+                placeholder="Search food..."
+                className="w-full border border-gray-300 bg-gray-50 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-yellow-400"
+              />
+              <Search
+                className="absolute left-3 top-2.5 text-gray-400"
+                size={18}
+              />
+            </div>
+
+            {/* SecNavbar items in Mobile */}
+            <div className="flex gap-4 py-2 border-b border-gray-50">
+              <span className="text-sm font-bold flex items-center gap-2">
+                <UtensilsCrossed size={16} /> Prime Meal
+              </span>
+              <span className="text-sm font-bold flex items-center gap-2">
+                <Store size={16} /> Prime Shop
+              </span>
+            </div>
+
+            <Link
+              href="/"
+              className="block text-gray-700 hover:text-yellow-500 font-medium py-2"
+            >
+              Home
+            </Link>
+            <Link
+              href="/products"
+              className="block text-gray-700 hover:text-yellow-500 font-medium py-2"
+            >
+              Shop
+            </Link>
+
+            <hr className="border-gray-100" />
+
+            <div className="flex items-center justify-between py-2">
+              <span className="text-gray-600 flex items-center gap-2">
+                <Globe size={18} /> Language: EN
+              </span>
+              <span className="text-gray-600 flex items-center gap-2">
+                <ShoppingCart size={18} /> Cart (3)
+              </span>
+            </div>
+
+            <button className="w-full text-center border border-gray-300 py-2 rounded-lg font-semibold text-gray-700 hover:bg-gray-50">
+              Log in
+            </button>
+
+            <button className="w-full text-center bg-yellow-300 hover:bg-yellow-400 text-gray-900 py-3 rounded-lg font-bold shadow-sm">
+              Sign up for Free Delivery
+            </button>
           </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-white/10" />
-        <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer">
-          <User className="mr-2 h-4 w-4" /> Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer">
-          <Link className="flex items-center gap-1" href={"/become-a-partner"}>
-            <Handshake className="mr-2 h-4 w-4" /> Partner with foodprime
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer">
-          <Settings className="mr-2 h-4 w-4" /> Settings
-        </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-white/10" />
-        <DropdownMenuItem className="focus:bg-red-500/10 text-red-400 focus:text-red-400 cursor-pointer">
-          <LogOut className="mr-2 h-4 w-4" /> Log out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </div>
+      )}
+    </nav>
   );
 };
 
-const MenuItemComponent = ({ item }: { item: MenuItem }) => {
-  if (item.items) {
-    return (
-      <NavigationMenuItem>
-        <NavigationMenuTrigger className="bg-transparent text-white hover:bg-white/10 focus:bg-white/10 data-[state=open]:bg-white/10">
-          {item.title}
-        </NavigationMenuTrigger>
-        <NavigationMenuContent className="bg-black border border-white/10 shadow-2xl">
-          <div className="grid w-[400px] gap-2 p-4">
-            {item.items.map((sub) => (
-              <a
-                key={sub.title}
-                href={sub.url}
-                className="flex gap-4 rounded-md p-3 hover:bg-white/10 transition-colors"
-              >
-                <div className="mt-1">{sub.icon}</div>
-                <div>
-                  <div className="text-sm font-semibold">{sub.title}</div>
-                  <p className="text-sm text-zinc-400 line-clamp-2">
-                    {sub.description}
-                  </p>
-                </div>
-              </a>
-            ))}
-          </div>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
-    );
-  }
-  return (
-    <NavigationMenuItem>
-      <NavigationMenuLink
-        href={item.url}
-        className="px-4 py-2 text-sm font-medium hover:bg-white/10 rounded-md transition-colors"
-      >
-        {item.title}
-      </NavigationMenuLink>
-    </NavigationMenuItem>
-  );
-};
-
-const MobileMenuItem = ({ item }: { item: MenuItem }) => {
-  if (item.items) {
-    return (
-      <AccordionItem value={item.title} className="border-none">
-        <AccordionTrigger className="py-2 text-lg font-medium hover:no-underline">
-          {item.title}
-        </AccordionTrigger>
-        <AccordionContent className="flex flex-col gap-2 pl-4 border-l border-white/10 ml-2">
-          {item.items.map((sub) => (
-            <a key={sub.title} href={sub.url} className="text-zinc-400 py-1">
-              {sub.title}
-            </a>
-          ))}
-        </AccordionContent>
-      </AccordionItem>
-    );
-  }
-  return (
-    <a href={item.url} className="py-2 text-lg font-medium block">
-      {item.title}
-    </a>
-  );
-};
-
-export { Navbar };
+export default Navbar;

@@ -27,14 +27,13 @@ const MealForm = () => {
     prepTime: null,
     calories: null,
     categoryId: "",
-    providerId: "", // এটি আসলে userId হিসেবে কাজ করবে
+    providerId: "",
   });
 
   useEffect(() => {
     const fetchSession = async () => {
       try {
         const result = await getSessionAction();
-        // আপনার অবজেক্ট স্ট্রাকচার অনুযায়ী: result.data.session.userId
         const userId = result?.data?.session?.userId || result?.data?.user?.id;
 
         if (userId) {

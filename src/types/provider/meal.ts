@@ -52,3 +52,40 @@ export interface MealFormData {
   categoryId: string;
   providerId: string;
 }
+
+export type SpicinessLevel = "MILD" | "MEDIUM" | "SPICY" | "EXTRA_SPICY";
+
+export interface Provider {
+  id: string;
+  businessName: string;
+  rating: number;
+  estimatedDeliveryTime: string;
+}
+
+export interface MealsProvider {
+  id: string;
+  name: string;
+  description: string;
+  price: string | number;
+  discountPrice?: string | number;
+  imageUrl: string;
+  isAvailable: boolean;
+  isVeg: boolean;
+  spiciness: SpicinessLevel;
+  isBestseller: boolean;
+  prepTime: number;
+  calories: number;
+  categoryId: string;
+  providerId: string;
+  createdAt: string;
+  updatedAt: string;
+  provider: Provider; // Nested provider object
+}
+
+// Service Response er jonno common type
+export interface ServiceResponse<T> {
+  success: boolean;
+  data?: T;
+  message: string;
+  errors?: any;
+}
