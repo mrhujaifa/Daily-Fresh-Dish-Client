@@ -1,8 +1,9 @@
+import { mealAPI } from "@/lib/api";
 import { Meal } from "@/types";
 
 export const mealServices = {
   getAllMeals: async () => {
-    const url = `http://localhost:8080/api/meals`;
+    const url = `${mealAPI}`;
 
     try {
       const response = await fetch(url, {
@@ -40,7 +41,7 @@ export const mealServices = {
   },
   getMealCategories: async () => {
     // await new Promise((resolve) => setTimeout(resolve, 3000));
-    const url = `http://localhost:8080/api/meals/categories`;
+    const url = `${mealAPI}/categories`;
 
     try {
       const response = await fetch(url, {

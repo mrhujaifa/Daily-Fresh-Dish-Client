@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { AppSidebar } from "@/components/layouts/app-sidebar";
 import {
   Breadcrumb,

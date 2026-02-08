@@ -79,7 +79,7 @@ export default function ProviderPartnershipForm() {
       } else {
         toast.error(response.message || "Something went wrong");
         if (response.errors) {
-          setErrors(response.errors as Record<string, string[]>);
+          setErrors(response.errors);
         }
       }
     } catch (error) {

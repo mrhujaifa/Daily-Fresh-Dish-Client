@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:8080/api"; // আপনার এক্সপ্রেস সার্ভারের ইউআরএল
+import { API } from "@/lib/api";
+
+const API_URL = API
 
 export const reviewServices = {
   // ১. রিভিউ পোস্ট করার জন্য সার্ভিস

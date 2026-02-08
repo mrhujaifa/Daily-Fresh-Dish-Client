@@ -1,11 +1,12 @@
+import { API, cartAPI } from "@/lib/api";
 import { toast } from "sonner";
 
-const apiURl = "http://localhost:8080/api";
+const apiURl = API;
 
 export const cartServices = {
   async addToCart(mealId: string, quantity: number = 1) {
     try {
-      const api = "http://localhost:8080/api";
+      const api = API;
       const response = await fetch(`${api}/cart/add`, {
         method: "POST",
         headers: {
@@ -50,18 +51,15 @@ export const cartServices = {
   },
   async updateQuantity(itemId: string, action: "increase" | "decrease") {
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/cart/update-quantity",
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ itemId, action }),
-          credentials: "include",
-          cache: "no-store",
+      const response = await fetch(`${cartAPI}/update-quantity`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ itemId, action }),
+        credentials: "include",
+        cache: "no-store",
+      });
 
       const result = await response.json();
 

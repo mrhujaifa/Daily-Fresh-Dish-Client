@@ -20,6 +20,8 @@ const RestaurantProfile = async ({ params }: PageProps) => {
     await providerServices.getSingleProviderProfile(restaurantSlugId);
   const provider = restaurant.data;
 
+  // console.log(provider);
+
   const providerMeals = provider?.meals;
 
   const categoriesNav = await mealServices.getMealCategories();
@@ -53,7 +55,7 @@ const RestaurantProfile = async ({ params }: PageProps) => {
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-10 pb-12">
         {/* 2. Restaurant Profile Header */}
-        <ProfileHeader provider={provider} />
+        {provider && <ProfileHeader provider={provider} />}
 
         {/* 3. Sticky Category & Search */}
         <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 mb-8 rounded-b-xl px-6 flex items-center justify-between">
@@ -80,7 +82,16 @@ const RestaurantProfile = async ({ params }: PageProps) => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {providerMeals?.map((meal) => (
-                <MenuCard meal={meal} key={meal.id} />
+                <MenuCard
+                  key={meal.id}
+                  meal={{
+                    ...meal,
+                    price: Number(meal.price),
+                    discountPrice: meal.discountPrice
+                      ? Number(meal.discountPrice)
+                      : null,
+                  }}
+                />
               ))}
             </div>
           </div>

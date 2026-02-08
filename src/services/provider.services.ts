@@ -1,19 +1,21 @@
+import { providerAPI } from "@/lib/api";
 import {
   CreateMealRequest,
   IMeal,
   Meal,
-  MealsProviderProfile,
   UpdateMealPayload,
 } from "@/types";
 import { ApiResponse } from "@/types/api/api";
 import {
   ICreateProviderProfile,
   IProviderProfile,
+  IProviderProfileType,
 } from "@/types/provider/providerProfile";
+// import { cookies } from "next/headers";
 
 export const providerServices = {
   createMeal: async (payload: CreateMealRequest) => {
-    const url = `http://localhost:8080/api/provider/meals`;
+    const url = `${providerAPI}/meals`;
 
     try {
       const response = await fetch(url, {
@@ -48,7 +50,7 @@ export const providerServices = {
     }
   },
   createProviderProfile: async (payload: ICreateProviderProfile) => {
-    const url = `http://localhost:8080/api/provider/become-a-partner`;
+    const url = `${providerAPI}/become-a-partner`;
 
     try {
       const response = await fetch(url, {
@@ -84,7 +86,7 @@ export const providerServices = {
     }
   },
   getProviderPartnerShipRequest: async () => {
-    const url = `http://localhost:8080/api/provider/become-a-partner/request`;
+    const url = `${providerAPI}/become-a-partner/request`;
 
     try {
       const response = await fetch(url, {
@@ -92,7 +94,6 @@ export const providerServices = {
         headers: {
           "Content-Type": "application/json",
         },
-        cache: "no-store",
         credentials: "include",
       });
 
@@ -122,7 +123,7 @@ export const providerServices = {
   },
 
   getSingleProviderProfile: async (providerId: string) => {
-    const url = `http://localhost:8080/api/provider/profile/${providerId}`;
+    const url = `${providerAPI}/profile/${providerId}`;
 
     try {
       const response = await fetch(url, {
@@ -146,7 +147,7 @@ export const providerServices = {
 
       return {
         success: true,
-        data: result.data as MealsProviderProfile,
+        data: result.data as IProviderProfileType,
         message: "Get Provider successfully!",
       };
     } catch (error) {
@@ -158,7 +159,7 @@ export const providerServices = {
     }
   },
   getProviderOwnMeals: async () => {
-    const url = `http://localhost:8080/api/provider/own-meals`;
+    const url = `${providerAPI}/own-meals`;
 
     try {
       const response = await fetch(url, {
@@ -198,7 +199,7 @@ export const providerServices = {
     mealId: string,
     payload: UpdateMealPayload,
   ): Promise<ApiResponse<IMeal>> => {
-    const url = `http://localhost:8080/api/provider/meals/${mealId}`;
+    const url = `${providerAPI}/meals/${mealId}`;
 
     try {
       const response = await fetch(url, {
@@ -225,6 +226,71 @@ export const providerServices = {
         message: "Meal updated successfully!",
       };
     } catch (error) {
+      return {
+        success: false,
+        message: "Internal server error.",
+      };
+    }
+  },
+
+  getProviderOwnOrders: async () => {
+    const url = `${providerAPI}/meal-orders`;
+
+    // ১. সব কুকি স্ট্রিং হিসেবে গেট করা
+    // const cookieStore = await cookies();
+    // const allCookies = cookieStore.toString();
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // ২. কুকিগুলো হেডার হিসেবে পাঠাতে হবে
+          // Cookie: allCookies,
+        },
+        credentials: "include",
+        cache: "no-store",
+      });
+
+      if (response.status === 401) {
+        return {
+          success: false,
+          message: "Session expired or unauthorized. Please login again.",
+        };
+      }
+
+      const result = await response.json();
+      if (!response.ok) {
+        return {
+          success: false,
+          message: result.message || "Failed to fetch orders",
+        };
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Fetch Error:", error);
+      return { success: false, message: "Network error or server is down." };
+    }
+  },
+
+  deleteOwnMeals: async (mealId: string) => {
+    const url = `${providerAPI}/meals/${mealId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        cache: "no-store",
+      });
+      const result = await response.json();
+
+      return result;
+    } catch (error) {
+      console.error("Fetch Error:", error);
       return {
         success: false,
         message: "Internal server error.",

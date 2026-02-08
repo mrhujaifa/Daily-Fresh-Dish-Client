@@ -1,5 +1,5 @@
 import { Route } from "@/types";
-import { House, History, Soup } from "lucide-react";
+import { House, History, Soup, ListOrdered, LeafyGreen } from "lucide-react";
 
 export const userRoutes: Route[] = [
   {
@@ -21,9 +21,14 @@ export const userRoutes: Route[] = [
         url: "/dashboard/provider/meals/create",
       },
       {
-        icon: Soup,
+        icon: LeafyGreen,
         title: "My Meals",
         url: "/dashboard/provider/meals",
+      },
+      {
+        icon: ListOrdered,
+        title: "Customer Meals Orders",
+        url: "/dashboard/provider/meals/orders",
       },
     ],
   },

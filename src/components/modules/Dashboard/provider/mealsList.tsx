@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Edit, Trash2, Plus, Utensils, RefreshCcw } from "lucide-react";
 import { toast } from "sonner"; // অথবা আপনার পছন্দের টোস্ট লাইব্রেরি
+import { providerServices } from "@/services/provider.services";
+import { providerAPI } from "@/lib/api";
 
 // আপনার মডেল অনুযায়ী ইন্টারফেস
 interface Meal {
@@ -25,7 +27,7 @@ export default function MealListPage() {
   const fetchProviderMeals = async () => {
     setLoading(true);
     try {
-      const url = `http://localhost:8080/api/provider/own-meals`;
+      const url = `${providerAPI}/own-meals`;
       const response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -51,6 +53,27 @@ export default function MealListPage() {
   useEffect(() => {
     fetchProviderMeals();
   }, []);
+
+  const handleDeleteMenuItem = async (mealId: string) => {
+    const isConfirmed = confirm(
+      "আপনি কি নিশ্চিতভাবে এই খাবারটি ডিলিট করতে চান?",
+    );
+    if (!isConfirmed) return;
+
+    try {
+      const result = await providerServices.deleteOwnMeals(mealId);
+
+      if (result.success) {
+        toast.success("সফলভাবে ডিলিট হয়েছে!");
+      } else {
+        toast.error(
+          "এই খাবারটি ডিলিট করা সম্ভব নয় কারণ এটি কোনো অর্ডারের সাথে যুক্ত আছে।",
+        );
+      }
+    } catch (error) {
+      toast.error("সার্ভার এরর! পরে চেষ্টা করুন।");
+    }
+  };
 
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
@@ -185,7 +208,7 @@ export default function MealListPage() {
                           <button
                             className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all border border-red-100 shadow-sm"
                             title="Delete Item"
-                            onClick={() => alert("Confirm Delete?")}
+                            onClick={() => handleDeleteMenuItem(meal.id)}
                           >
                             <Trash2 size={18} />
                           </button>

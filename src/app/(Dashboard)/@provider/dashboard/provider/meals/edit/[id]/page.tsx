@@ -26,7 +26,7 @@ export default function EditMealForm() {
         setFetching(true);
         const result = await providerServices.getProviderOwnMeals();
         if (result.success && result.data) {
-          const currentMeal = (result.data as IMeal[]).find(
+          const currentMeal = (result.data as unknown as IMeal[]).find(
             (m) => m.id === mealId,
           );
           if (currentMeal) {

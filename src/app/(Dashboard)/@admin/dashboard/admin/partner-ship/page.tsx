@@ -1,5 +1,6 @@
 import PartnerShipRequestList from "@/components/modules/Dashboard/admin/PartnerShipRequestList";
-import React from "react";
+
+export const dynamic = "force-dynamic";
 
 export default function PartnerShipManagement() {
   return (

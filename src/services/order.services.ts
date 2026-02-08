@@ -1,4 +1,6 @@
-const url = `http://localhost:8080/api/order`;
+import { orderAPI } from "@/lib/api";
+
+const url = `${orderAPI}`;
 export const orderServices = {
   placeOrder: async (orderData: {
     deliveryAddress: string;
@@ -26,23 +28,21 @@ export const orderServices = {
       }
 
       return data;
-    } catch (error: any) {
-      throw new Error(error.message);
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : "An unexpected error occurred");
     }
   },
 
-  /**
-   * User-er purono order history dekhar jonno (Optional)
-   */
+  
   getMyOrders: async () => {
-    const token = localStorage.getItem("token"); // Token thakle
     const response = await fetch(`${url}/my-orders`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Header-e token pathano
+      
       },
-      credentials: "include", // Jodi Cookie use koro tobe eita thakbe
+      credentials: "include", 
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -51,4 +51,22 @@ export const orderServices = {
 
     return await response.json();
   },
-};
+
+  getOrderById: async (orderId: string) => {
+    const response = await fetch(`${url}/${orderId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      cache: "no-store",
+    })
+
+    const data = await response.json();
+
+    // if (!response.ok) {
+    //   throw new Error(data.message || "Order details fetch failed");
+    // }
+    return data;
+  }
+}

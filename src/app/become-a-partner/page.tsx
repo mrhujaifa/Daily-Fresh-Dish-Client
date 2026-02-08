@@ -1,6 +1,5 @@
 import Navbar from "@/components/layouts/Navbar";
 import PartnerShipForm from "@/components/modules/Authentication/PartnerShipForm";
-import React from "react";
 
 export default function PartnerShip() {
   return (
