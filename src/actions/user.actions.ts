@@ -1,7 +1,6 @@
 "use server";
 
 import { userService } from "@/services/user.services";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const getSessionAction = async () => {
@@ -13,10 +12,11 @@ export const getSessionAction = async () => {
 };
 
 export async function handleSignOutServer() {
-  // Better Auth ডিফল্টভাবে এই নামে কুকি সেট করে
-  const cookieStore = await cookies();
-  cookieStore.delete("better-auth.session_token");
+  await fetch(`${process.env.AUTH_URL}/sign-out`, {
+    method: "POST",
+    credentials: "include",
+  });
 
-  // লগআউট হওয়ার পর ইউজারকে রিডাইরেক্ট করুন
   redirect("/login");
 }
+
