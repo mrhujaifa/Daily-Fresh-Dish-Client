@@ -29,19 +29,19 @@ export const orderServices = {
 
       return data;
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : "An unexpected error occurred");
+      throw new Error(
+        error instanceof Error ? error.message : "An unexpected error occurred",
+      );
     }
   },
 
-  
   getMyOrders: async () => {
     const response = await fetch(`${url}/my-orders`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-      
       },
-      credentials: "include", 
+      credentials: "include",
       cache: "no-store",
     });
 
@@ -60,7 +60,7 @@ export const orderServices = {
       },
       credentials: "include",
       cache: "no-store",
-    })
+    });
 
     const data = await response.json();
 
@@ -68,5 +68,24 @@ export const orderServices = {
     //   throw new Error(data.message || "Order details fetch failed");
     // }
     return data;
-  }
-}
+  },
+
+  updateOrderStatus: async (orderId: string, status: string) => {
+    const response = await fetch(`${url}/${orderId}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ status }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to update order status");
+    }
+
+    return data;
+  },
+};

@@ -1,6 +1,28 @@
 import { getOrderByIdAction } from "@/actions/order.action";
+import StatusButton from "@/components/modules/Dashboard/provider/statusButton";
 import { OrderItem } from "@/types/provider/order";
 import { MapPin, Clock, CreditCard } from "lucide-react";
+
+// Order status transition map
+const statusTransitions: Record<
+  string,
+  { label: string; next: string; variant: "primary" | "danger" }[]
+> = {
+  PLACED: [
+    { label: "Accept Order", next: "PREPARING", variant: "primary" },
+    { label: "Reject Order", next: "REJECTED", variant: "danger" },
+  ],
+  PREPARING: [{ label: "Mark as Ready", next: "READY", variant: "primary" }],
+  READY: [
+    { label: "Send for Delivery", next: "ON_THE_WAY", variant: "primary" },
+  ],
+  ON_THE_WAY: [
+    { label: "Mark as Delivered", next: "DELIVERED", variant: "primary" },
+  ],
+  REJECTED: [],
+  DELIVERED: [],
+  CANCELLED: [],
+};
 
 export default async function OrderDetailPage({
   params,
@@ -150,16 +172,15 @@ export default async function OrderDetailPage({
 
       {/* Actions */}
       <div className="flex justify-end gap-4">
-        {order.status !== "DELIVERED" && (
-          <>
-            <button className="px-8 py-3 rounded-xl border-2 border-[#FFD9D9] text-[#FF4B4B] font-black hover:bg-red-50 transition-colors">
-              Reject Order
-            </button>
-            <button className="px-8 py-3 rounded-xl bg-[#FF7A1A] text-white font-black shadow-lg shadow-[#FF7A1A33] hover:bg-[#e66e17] transition-colors">
-              Accept Order
-            </button>
-          </>
-        )}
+        {statusTransitions[order.status]?.map((action) => (
+          <StatusButton
+            key={action.next}
+            orderId={order.id}
+            nextStatus={action.next}
+            label={action.label}
+            variant={action.variant}
+          />
+        ))}
       </div>
     </div>
   );
