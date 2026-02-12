@@ -23,6 +23,7 @@ import { DesktopAuthSection, LanguageSelector } from "./desktop-nav";
 import { MobileSearch, MobileBottomNav } from "./mobile-nav";
 import { MobileSidebar } from "./sidebar";
 import CartSidebarCom from "../CartSidebar";
+import { getSessionAction } from "@/actions/user.action";
 
 const NavbarMain = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -38,12 +39,24 @@ const NavbarMain = () => {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const isActive = (path: string) => pathname === path;
-  const { data } = authClient.useSession();
 
   useEffect(() => {
-    setSession(data || null);
-    setLoading(false);
-  }, [data]);
+    const fetchUserSession = async () => {
+      try {
+        setLoading(true);
+        const user = await getSessionAction();
+        setSession(user.data || null);
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserSession();
+  }, []);
+
+  console.log(session);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
