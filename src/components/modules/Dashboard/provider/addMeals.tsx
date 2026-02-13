@@ -8,12 +8,12 @@ import { mealSchema } from "@/schemas/meal.schema";
 import { providerServices } from "@/services/provider.services";
 import { MealFormData, Spicy } from "@/types";
 import { useUser } from "@/hooks/useSession";
+import { getSessionAction } from "@/actions/user.action";
 
 const MealForm = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const { user, isLoading: sessionLoading } = useUser();
+  const [session, setSession] = useState<any>(null);
 
   const [formData, setFormData] = useState<MealFormData>({
     name: "",
@@ -32,11 +32,30 @@ const MealForm = () => {
   });
 
   // User session pawa gele providerId set kora
+
   useEffect(() => {
-    if (user?.id) {
-      setFormData((prev) => ({ ...prev, providerId: user.id }));
+    const fetchUserSession = async () => {
+      try {
+        setLoading(true);
+        const user = await getSessionAction();
+        setSession(user.data || null);
+      } catch (error) {
+        console.error("Error fetching session:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserSession();
+  }, []);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      setFormData((prev) => ({ ...prev, providerId: session?.user?.id }));
     }
-  }, [user]);
+  }, [session]);
+
+  console.log(session?.user?.id);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -228,19 +247,15 @@ const MealForm = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading || sessionLoading}
+          disabled={loading}
           className="w-full bg-orange-600 text-white py-3 rounded font-bold hover:bg-orange-700 disabled:bg-orange-300 transition-colors flex justify-center items-center gap-2"
         >
-          {loading || sessionLoading ? (
+          {loading ? (
             <Loader2 className="animate-spin" size={20} />
           ) : (
             <Save size={20} />
           )}
-          {sessionLoading
-            ? "Authenticating..."
-            : loading
-              ? "Saving..."
-              : "Create Meal"}
+          create meals
         </button>
       </form>
     </div>
