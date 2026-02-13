@@ -1,20 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Save, Loader2, Utensils, Clock, Flame } from "lucide-react";
 import { toast } from "sonner";
-
 import { mealSchema } from "@/schemas/meal.schema";
-import { providerServices } from "@/services/provider.services";
 import { MealFormData, Spicy } from "@/types";
-import { useUser } from "@/hooks/useSession";
-import { getSessionAction } from "@/actions/user.action";
 import { providerCreateMealAction } from "@/actions/provider.action";
 
 const MealForm = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [session, setSession] = useState<any>(null);
 
   const [formData, setFormData] = useState<MealFormData>({
     name: "",
@@ -32,32 +27,6 @@ const MealForm = () => {
     providerId: "",
   });
 
-  // User session pawa gele providerId set kora
-
-  // useEffect(() => {
-  //   const fetchUserSession = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const user = await getSessionAction();
-  //       setSession(user.data || null);
-  //     } catch (error) {
-  //       console.error("Error fetching session:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchUserSession();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (session?.user?.id) {
-  //     setFormData((prev) => ({ ...prev, providerId: session?.user?.id }));
-  //   }
-  // }, [session]);
-
-  // console.log(session?.user?.id);
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -71,19 +40,10 @@ const MealForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // if (!formData.providerId) {
-    //   toast.error("Identity not verified. Please refresh.");
-    //   return;
-    // }
-
-    console.log("..........");
-
     setLoading(true);
     setErrors({});
 
     const result = mealSchema.safeParse(formData);
-
-    console.log(result);
 
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -100,14 +60,6 @@ const MealForm = () => {
       console.log(res);
       if (res.success) {
         toast.success("Meal created successfully!");
-        // Form reset logic
-        setFormData({
-          ...formData,
-          name: "",
-          description: "",
-          price: 0,
-          categoryId: "",
-        });
       } else {
         toast.error(res.message || "Failed to create meal");
       }

@@ -155,16 +155,17 @@ export const providerServices = {
       };
     }
   },
-  getProviderOwnMeals: async () => {
+  getProviderOwnMeals: async (cookie: any) => {
     const url = `${providerAPI}/own-meals`;
+    const allCookies = cookie.toString();
 
     try {
       const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Cookie: allCookies,
         },
-        credentials: "include",
         cache: "no-store",
       });
 

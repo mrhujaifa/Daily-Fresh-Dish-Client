@@ -9,16 +9,14 @@ export const getProviderOwnOrdersAction = async () => {
   const url = `${providerAPI}/meal-orders`;
 
   try {
-    // ১. সার্ভার সাইড থেকে কুকি সংগ্রহ করা
     const cookieStore = await cookies();
     const allCookies = cookieStore.toString();
 
-    // ২. ব্যাকেন্ড এপিআই-তে রিকোয়েস্ট পাঠানো
     const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Cookie: allCookies, // ম্যানুয়ালি কুকি পাস করা হচ্ছে
+        Cookie: allCookies,
       },
       cache: "no-store",
     });
@@ -47,8 +45,16 @@ export const getProviderOwnOrdersAction = async () => {
 
 export const providerCreateMealAction = async (payload: CreateMealRequest) => {
   const cookieStore = await cookies();
-
   const creatMeal = await providerServices.createMeal(payload, cookieStore);
-
   return creatMeal;
+};
+
+export const getProviderOwnMealAction = async () => {
+  const cookeStore = await cookies();
+  const getMeals = await providerServices.getProviderOwnMeals(cookeStore);
+  return {
+    data: getMeals.data,
+    success: getMeals.success,
+    error: getMeals.errors,
+  };
 };

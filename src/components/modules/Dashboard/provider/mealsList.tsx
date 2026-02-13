@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { Edit, Trash2, Plus, Utensils, RefreshCcw } from "lucide-react";
-import { toast } from "sonner"; // অথবা আপনার পছন্দের টোস্ট লাইব্রেরি
+import { useState, useEffect } from "react";
+import { Edit, Trash2, Plus, Utensils } from "lucide-react";
+import { toast } from "sonner";
 import { providerServices } from "@/services/provider.services";
-import { providerAPI } from "@/lib/api";
 
-// আপনার মডেল অনুযায়ী ইন্টারফেস
 interface Meal {
   id: string;
   name: string;
@@ -17,58 +15,31 @@ interface Meal {
   category: { name: string };
   isAvailable: boolean;
   imageUrl: string | null;
-  providerId: string;
 }
 
-export default function MealListPage() {
-  const [meals, setMeals] = useState<Meal[]>([]);
-  const [loading, setLoading] = useState(true);
+interface Props {
+  initialMeals: Meal[];
+}
 
-  const fetchProviderMeals = async () => {
-    setLoading(true);
-    try {
-      const url = `${providerAPI}/own-meals`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        cache: "no-store",
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        setMeals(result.data);
-      } else {
-        toast.error(result.message || "Failed to load meals");
-      }
-    } catch (error) {
-      console.error("Fetch Error:", error);
-      toast.error("Internal server error.");
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function MealListPage({ initialMeals }: Props) {
+  const [meals, setMeals] = useState<Meal[]>(initialMeals);
 
   useEffect(() => {
-    fetchProviderMeals();
-  }, []);
+    setMeals(initialMeals);
+  }, [initialMeals]);
 
   const handleDeleteMenuItem = async (mealId: string) => {
-    const isConfirmed = confirm(
-      "আপনি কি নিশ্চিতভাবে এই খাবারটি ডিলিট করতে চান?",
-    );
+    const isConfirmed = confirm("are you sure delete Meal");
     if (!isConfirmed) return;
 
     try {
       const result = await providerServices.deleteOwnMeals(mealId);
 
       if (result.success) {
-        toast.success("সফলভাবে ডিলিট হয়েছে!");
+        setMeals((prev) => prev.filter((meal) => meal.id !== mealId));
+        toast.success("Meal Deleted Successfull!");
       } else {
-        toast.error(
-          "এই খাবারটি ডিলিট করা সম্ভব নয় কারণ এটি কোনো অর্ডারের সাথে যুক্ত আছে।",
-        );
+        toast.error(result.message || "এই খাবারটি ডিলিট করা সম্ভব নয়।");
       }
     } catch (error) {
       toast.error("সার্ভার এরর! পরে চেষ্টা করুন।");
@@ -77,13 +48,17 @@ export default function MealListPage() {
 
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto">
-        {/* Header Section */}
+      <div className="max-w-full mx-auto">
+        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">My Menu</h1>
             <p className="text-gray-500 text-sm">
-              Manage your {meals.length} delicious items
+              Manage your{" "}
+              <span className="font-semibold text-orange-600">
+                {meals?.length || 0}
+              </span>{" "}
+              items
             </p>
           </div>
           <Link
@@ -95,41 +70,21 @@ export default function MealListPage() {
           </Link>
         </div>
 
-        {/* Table Container */}
+        {/* Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead className="bg-gray-50/50 border-b border-gray-200">
-                <tr>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-500">
-                    Item Details
-                  </th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-500">
-                    Category
-                  </th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-500">
-                    Price
-                  </th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-500">
-                    Availability
-                  </th>
-                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-500 text-right">
-                    Actions
-                  </th>
+                <tr className="text-gray-500 text-xs font-bold uppercase tracking-wider">
+                  <th className="p-4">Item Details</th>
+                  <th className="p-4">Category</th>
+                  <th className="p-4">Price</th>
+                  <th className="p-4">Availability</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {loading ? (
-                  // সিম্পল লোডিং স্টেট
-                  <tr>
-                    <td colSpan={5} className="p-20 text-center text-gray-400">
-                      <div className="flex flex-col items-center gap-2">
-                        <RefreshCcw className="animate-spin text-orange-500" />
-                        Fetching your menu...
-                      </div>
-                    </td>
-                  </tr>
-                ) : meals.length > 0 ? (
+                {meals && meals.length > 0 ? (
                   meals.map((meal) => (
                     <tr
                       key={meal.id}
@@ -137,7 +92,7 @@ export default function MealListPage() {
                     >
                       <td className="p-4">
                         <div className="flex items-center gap-4">
-                          <div className="h-14 w-14 rounded-xl overflow-hidden bg-gray-100 relative border border-gray-100">
+                          <div className="h-14 w-14 rounded-xl overflow-hidden bg-gray-100 relative border border-gray-100 shadow-inner">
                             {meal.imageUrl ? (
                               <Image
                                 src={meal.imageUrl}
@@ -183,21 +138,21 @@ export default function MealListPage() {
                         )}
                       </td>
                       <td className="p-4">
-                        <button
+                        <span
                           className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border ${
                             meal.isAvailable
-                              ? "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
-                              : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : "bg-red-50 text-red-700 border-red-200"
                           }`}
                         >
                           <span
                             className={`h-1.5 w-1.5 rounded-full mr-2 ${meal.isAvailable ? "bg-green-600 animate-pulse" : "bg-red-600"}`}
                           ></span>
                           {meal.isAvailable ? "Available" : "Unavailable"}
-                        </button>
+                        </span>
                       </td>
                       <td className="p-4 text-right">
-                        <div className="flex justify-end gap-3">
+                        <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Link
                             href={`/dashboard/provider/meals/edit/${meal.id}`}
                             className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all border border-blue-100 shadow-sm"
@@ -206,9 +161,9 @@ export default function MealListPage() {
                             <Edit size={18} />
                           </Link>
                           <button
+                            onClick={() => handleDeleteMenuItem(meal.id)}
                             className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all border border-red-100 shadow-sm"
                             title="Delete Item"
-                            onClick={() => handleDeleteMenuItem(meal.id)}
                           >
                             <Trash2 size={18} />
                           </button>
@@ -219,9 +174,11 @@ export default function MealListPage() {
                 ) : (
                   <tr>
                     <td colSpan={5} className="p-20 text-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <Utensils size={40} className="text-gray-200 mb-2" />
-                        <p className="text-gray-500 font-medium">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="p-4 bg-gray-100 rounded-full text-gray-300">
+                          <Utensils size={40} />
+                        </div>
+                        <p className="text-gray-500 font-medium italic">
                           No meals found in your menu.
                         </p>
                       </div>
