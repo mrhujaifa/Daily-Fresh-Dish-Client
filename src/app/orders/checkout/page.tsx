@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import SecNavbar from "@/components/layouts/HeaderNav";
 import { getCartItemAction } from "@/actions/cart.action";
+import { createOrderAction } from "@/actions/order.action";
 
 export default function CheckoutPage() {
   const [cart, setCart] = useState<any>(null);
@@ -92,7 +93,7 @@ export default function CheckoutPage() {
     };
 
     try {
-      const result = await orderServices.placeOrder(orderData);
+      const result = await createOrderAction(orderData);
 
       if (result.success) {
         toast.success("Order Placed Successfully!");

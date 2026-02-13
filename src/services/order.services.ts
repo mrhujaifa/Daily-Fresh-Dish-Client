@@ -1,23 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { orderAPI } from "@/lib/api";
 
 const url = `${orderAPI}`;
 export const orderServices = {
-  placeOrder: async (orderData: {
-    deliveryAddress: string;
-    phoneNumber: string;
-    orderNotes?: string;
-    riderTip: number;
-    serviceFee: number;
-    deliveryFee: number;
-    paymentMethod: string;
-  }) => {
+  placeOrder: async (
+    orderData: {
+      deliveryAddress: string;
+      phoneNumber: string;
+      orderNotes?: string;
+      riderTip: number;
+      serviceFee: number;
+      deliveryFee: number;
+      paymentMethod: string;
+    },
+    cookieStore: any,
+  ) => {
     try {
       const response = await fetch(`${url}/place-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Cookie: cookieStore,
         },
-        credentials: "include",
         body: JSON.stringify(orderData),
       });
 
@@ -35,11 +39,12 @@ export const orderServices = {
     }
   },
 
-  getMyOrders: async () => {
+  getMyOrders: async (cookieStore: any) => {
     const response = await fetch(`${url}/my-orders`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Cookie: cookieStore,
       },
       credentials: "include",
       cache: "no-store",

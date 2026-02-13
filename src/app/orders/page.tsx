@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
 import { orderServices } from "@/services/order.services";
@@ -17,6 +18,7 @@ import {
 import { toast } from "sonner";
 import Navbar from "@/components/layouts/Navbar";
 import { useUser } from "@/hooks/useSession";
+import { getMyOrderAction } from "@/actions/order.action";
 
 export default function MyOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -49,7 +51,7 @@ export default function MyOrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const data = await orderServices.getMyOrders();
+      const data = await getMyOrderAction();
       setOrders(data.orders || []);
     } catch (err) {
       toast.error("Orders load korte somoshya hoyeche");

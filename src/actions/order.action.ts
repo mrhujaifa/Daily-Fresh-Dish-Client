@@ -2,6 +2,7 @@
 "use server";
 
 import { orderAPI } from "@/lib/api";
+import { orderServices } from "@/services/order.services";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -62,3 +63,33 @@ export async function updateOrderStatusAction(orderId: string, status: string) {
     return { success: false, error: error.message };
   }
 }
+
+export const createOrderAction = async (orderData: {
+  deliveryAddress: string;
+  phoneNumber: string;
+  orderNotes?: string;
+  riderTip: number;
+  serviceFee: number;
+  deliveryFee: number;
+  paymentMethod: string;
+}) => {
+  try {
+    const cookieStore = (await cookies()).toString();
+    const result = orderServices.placeOrder(orderData, cookieStore);
+
+    return result;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getMyOrderAction = async () => {
+  try {
+    const cookieStore = (await cookies()).toString();
+    const result = orderServices.getMyOrders(cookieStore);
+
+    return result;
+  } catch (error) {
+    console.log(error);
+  }
+};
