@@ -1,4 +1,5 @@
 "use client";
+import { addToCartAction } from "@/actions/cart.action";
 import { cartServices } from "@/services/cart.service";
 import { Meal } from "@/types";
 import { Plus, Star, ShoppingBag, Loader2 } from "lucide-react";
@@ -19,7 +20,7 @@ export const MenuCard = ({ meal }: MenuCardProps) => {
     setLoading(true);
     try {
       // Amader banano fetch service call
-      await cartServices.addToCart(id, 1);
+      await addToCartAction(id, 1);
 
       // Icche korle ekhane Cart Sidebar-ke auto open korar logic dewa jay
     } catch (error) {

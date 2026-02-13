@@ -20,7 +20,7 @@ const RestaurantProfile = async ({ params }: PageProps) => {
     await providerServices.getSingleProviderProfile(restaurantSlugId);
   const provider = restaurant.data;
 
-  // console.log(provider);
+  console.log(provider);
 
   const providerMeals = provider?.meals;
 

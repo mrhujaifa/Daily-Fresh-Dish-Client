@@ -1,19 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { API, cartAPI } from "@/lib/api";
 import { toast } from "sonner";
 
 const apiURl = API;
 
 export const cartServices = {
-  async addToCart(mealId: string, quantity: number = 1) {
+  async addToCart(mealId: string, quantity: number = 1, cookieStore: any) {
     try {
       const api = API;
       const response = await fetch(`${api}/cart/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
         },
         body: JSON.stringify({ mealId, quantity }),
-        credentials: "include",
         cache: "no-store",
       });
 
