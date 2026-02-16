@@ -1,36 +1,241 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# foodPrime 🍱
+**"Discover & Order Delicious Meals"**
 
-## Getting Started
+---
 
-First, run the development server:
+## Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+foodPrime is a full-stack web application for meal ordering. Customers can browse menus from various food providers, place orders, and track delivery status. Providers can manage their menus and fulfill orders. Admins oversee the platform and manage all users.
+
+---
+
+## Roles & Permissions
+
+| Role | Description | Key Permissions |
+|------|-------------|-----------------|
+| **Customer** | Users who order meals | Browse menus, place orders, track status, leave reviews |
+| **Provider** | Food vendors/restaurants | Manage menu, view orders, update order status |
+| **Admin** | Platform moderators | Manage all users, oversee orders, moderate content |
+
+> 💡 **Note**: Users select their role during registration. Admin accounts should be seeded in the database.
+
+---
+
+
+
+
+
+---
+
+## Features
+
+### Public Features
+- Browse all available meals and providers
+- Filter meals by cuisine, dietary preferences, and price
+- View provider profiles with menus
+
+### Customer Features
+- Register and login as customer
+- Add meals to cart
+- Place orders with delivery address (Cash on Delivery)
+- Track order status
+- Leave reviews after ordering
+- Manage profile
+
+### Provider Features
+- Register and login as provider
+- Add, edit, and remove menu items
+- View incoming orders
+- Update order status
+
+### Admin Features
+- View all users (customers and providers)
+- Manage user status (suspend/activate)
+- View all orders
+- Manage categories
+
+---
+
+## Pages & Routes
+
+> ⚠️ **Note**: These routes are examples. You may add, edit, or remove routes based on your implementation needs.
+
+### Public Routes
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | Home | Hero, categories, featured |
+| `/meals` | Browse Meals | List with filters |
+| `/meals/:id` | Meal Details | Info, add to cart |
+| `/providers/:id` | Provider | Menu, info |
+| `/login` | Login | Login form |
+| `/register` | Register | Registration form |
+
+### Customer Routes (Private)
+| Route | Page | Description |
+|-------|------|-------------|
+| `/cart` | Cart | View cart items |
+| `/checkout` | Checkout | Delivery address |
+| `/orders` | My Orders | Order history |
+| `/orders/:id` | Order Details | Items, status |
+| `/profile` | Profile | Edit info |
+
+### Provider Routes (Private)
+| Route | Page | Description |
+|-------|------|-------------|
+| `/provider/dashboard` | Dashboard | Orders, stats |
+| `/provider/menu` | Menu | Manage meals |
+| `/provider/orders` | Orders | Update status |
+
+### Admin Routes (Private)
+| Route | Page | Description |
+|-------|------|-------------|
+| `/admin` | Dashboard | Statistics |
+| `/admin/users` | Users | Manage users |
+| `/admin/orders` | Orders | All orders |
+| `/admin/categories` | Categories | Manage categories |
+
+---
+
+## Database Tables
+
+Design your own schema for the following tables:
+
+- **Users** - Store user information and authentication details
+- **ProviderProfiles** - Provider/restaurant-specific information (linked to Users)
+- **Categories** - Food categories (cuisine types)
+- **Meals** - Menu items offered by providers
+- **Orders** - Customer orders with items and status
+- **Reviews** - Customer reviews for meals
+
+> 💡 *Think about what fields each table needs based on the features above.*
+
+---
+
+## API Endpoints
+
+> ⚠️ **Note**: These endpoints are examples. You may add, edit, or remove endpoints based on your implementation needs.
+
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register new user |
+| POST | `/api/auth/login` | Login user |
+| GET | `/api/auth/me` | Get current user |
+
+### Meals & Providers (Public)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/meals` | Get all meals with filters |
+| GET | `/api/meals/:id` | Get meal details |
+| GET | `/api/providers` | Get all providers |
+| GET | `/api/providers/:id` | Get provider with menu |
+
+### Orders
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/orders` | Create new order |
+| GET | `/api/orders` | Get user's orders |
+| GET | `/api/orders/:id` | Get order details |
+
+### Provider Management
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/provider/meals` | Add meal to menu |
+| PUT | `/api/provider/meals/:id` | Update meal |
+| DELETE | `/api/provider/meals/:id` | Remove meal |
+| PATCH | `/api/provider/orders/:id` | Update order status |
+
+### Admin
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/admin/users` | Get all users |
+| PATCH | `/api/admin/users/:id` | Update user status |
+
+---
+
+## Flow Diagrams
+
+### 🍽️ Customer Journey
+
+```
+                              ┌──────────────┐
+                              │   Register   │
+                              └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │ Browse Meals │
+                              └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │ Add to Cart  │
+                              └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │   Checkout   │
+                              └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │ Track Order  │
+                              └──────────────┘
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🍳 Provider Journey
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+                              ┌──────────────┐
+                              │   Register   │
+                              └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │  Add Menu    │
+                              │    Items     │
+                              └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │ View Orders  │
+                              └──────────────┘
+                                     │
+                                     ▼
+                              ┌──────────────┐
+                              │Update Status │
+                              └──────────────┘
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 📊 Order Status
 
-## Learn More
+```
+                              ┌──────────────┐
+                              │    PLACED    │
+                              └──────────────┘
+                               /            \
+                              /              \
+                       (provider)       (customer)
+                         starts          cancels
+                            /                \
+                           ▼                  ▼
+                   ┌──────────────┐   ┌──────────────┐
+                   │  PREPARING   │   │  CANCELLED   │
+                   └──────────────┘   └──────────────┘
+                          │
+                          ▼
+                   ┌──────────────┐
+                   │    READY     │
+                   └──────────────┘
+                          │
+                          ▼
+                   ┌──────────────┐
+                   │  DELIVERED   │
+                   └──────────────┘
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Submission
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+📋 **See [README.md](./README.md) for submission guidelines, timeline, and marks.**
